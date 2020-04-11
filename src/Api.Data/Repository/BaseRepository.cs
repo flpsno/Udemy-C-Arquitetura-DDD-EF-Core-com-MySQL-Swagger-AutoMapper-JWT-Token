@@ -18,16 +18,30 @@ namespace Api.Data.Repository
             _context = context;
             _dataSet = _context.Set<T>();
         }
-        public Task<bool> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var result = await _dataSet.SingleOrDefaultAsync(p => p.Id.Equals(id));
+
+                if (result == null)
+                    return false;
+
+                _dataSet.Remove(result);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<T> InsertAsync(T entity)
         {
             try
             {
-                if (entity.Id == Guid.Empty) 
+                if (entity.Id == Guid.Empty)
                 {
                     entity.Id = Guid.NewGuid();
                 }
@@ -42,6 +56,11 @@ namespace Api.Data.Repository
             }
 
             return entity;
+        }
+
+        public async Task<bool> ExistAsync(Guid id)
+        {
+            return await _dataSet.AnyAsync(p => p.Id.Equals(id));
         }
 
         public Task<T> SelectAsync(int id)
