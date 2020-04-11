@@ -63,7 +63,7 @@ namespace Api.Data.Repository
             return await _dataSet.AnyAsync(p => p.Id.Equals(id));
         }
 
-        public async Task<T> SelectAsync(int id)
+        public async Task<T> SelectAsync(Guid id)
         {
             try
             {
